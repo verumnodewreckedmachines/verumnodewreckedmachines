@@ -1,0 +1,12 @@
+# Ambientes virtuais e cache
+venv/
+__pycache__/
+*.pyc
+
+# Variáveis de ambiente
+.env
+
+# Bancos de dados e arquivos locais
+data/axon_enterprise.db
+data/witness_logs/
+*.sqlite3
