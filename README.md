@@ -19,5 +19,13 @@ Sou desenvolvedor de software e arquiteto de sistemas focado em **otimização e
 *   **ORCID:** <a href="https://orcid.org/0009-0006-1172-7362">0009-0006-1172-7362</a>
 *   Meus projetos, datasets e versões customizadas de OS (incluindo o Verum Wrecked Machines 8.0 e o Verum Node OS: Technical Preview) estão distribuídos em plataformas científicas e open-source como **Zenodo, Hugging Face, Kaggle e SourceForge**.
 
+## ▶️ Executar Localmente
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+Por padrão, a aplicação sobe em `http://127.0.0.1:8000`.
+
 ---
 *🔒 **Security Notice:** GitHub Vigilant Mode is active. Commits shown by GitHub as verified reflect the signatures I publish; any commit attributed to this account without verification should be treated with caution.*
