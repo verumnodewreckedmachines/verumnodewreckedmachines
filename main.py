@@ -4,6 +4,7 @@ import os
 
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("PORT", "8000"))
+APP_NAME = "Verum Node local app"
 
 
 class AppHandler(BaseHTTPRequestHandler):
@@ -13,7 +14,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return
 
         body = (
-            "Verum Node local app is running.\n"
+            f"{APP_NAME} is running.\n"
             "Open README.md for project details.\n"
         ).encode("utf-8")
 
@@ -25,11 +26,11 @@ class AppHandler(BaseHTTPRequestHandler):
 
 def main():
     server = HTTPServer((HOST, PORT), AppHandler)
-    print(f"Starting Verum Node local app on http://{HOST}:{PORT}")
+    print(f"Starting {APP_NAME} on http://{HOST}:{PORT}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopping Verum Node local app.")
+        print(f"\nStopping {APP_NAME}.")
     finally:
         server.server_close()
 
