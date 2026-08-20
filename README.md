@@ -1,18 +1,23 @@
-## Hi there, I'm Rafael Augusto Xavier Fernandes 👋
+# 🏴‍☠️ Rafael A. Xavier Fernandes | Verum Node
+### Architecting Sovereign Systems & Cryptographic Civic Memory
 
-**Software Architect | Kernel Developer | Law Graduate**
+> *"Resistência é Memória."*
 
-I build systems from the ground up to achieve extreme hardware optimization, zero-telemetry, and absolute data sovereignty. I bridge the gap between low-level system engineering (C, bare-metal tuning) and legal data protection frameworks (LGPD/GDPR compliance).
+Sou desenvolvedor de software e arquiteto de sistemas focado em **otimização extrema de kernel Linux** e **soberania digital**. Construo sistemas projetados para eliminar telemetria comercial e desenvolvo protocolos de criptografia voltados para a proteção da propriedade intelectual, direitos humanos e preservação da memória cívica.
 
-- 🔭 **I’m currently working on:** [Verum Node OS](https://doi.org/10.5281/zenodo.19781658), a custom Linux distribution (Kernel 7.1-verum-wrecked) engineered for extreme NVMe I/O throughput and privacy by design.
-- 🌱 **I’m currently focusing on:** Advanced `io_uring` implementations, custom C kernel compilation, and bare-metal benchmarking.
-- 👯 **I’m looking to collaborate on:** Low-latency storage systems, enterprise-grade privacy infrastructure, and open-source projects that strip away commercial bloatware.
-- 🤔 **I’m looking for help with:** Expanding hardware compatibility for highly aggressive, minimal Kconfig profiles.
-- 💬 **Ask me about:** Achieving 238k+ IOPS on bare metal, completely disabling Big Tech telemetry, and the intersection of Systems Architecture and Brazilian Law (LGPD).
-- 📫 **How to reach me:** You can find my latest research and ISO publications on [Zenodo](https://doi.org/10.5281/zenodo.19781658) or connect with me on LinkedIn.
-- ⚡ **Fun fact:** I sold my MacBook and moved to an upgraded Acer laptop just so I could forge my own kernel from source, bypass generic processing bottlenecks, and double my SSD's read speed.
+## ⚡ Projetos & Foco Atual
+*   **AXON/VERUM:** Protocolo de Testemunha Digital e Memória Cívica Criptográfica. Um sistema de autoria digital imutável utilizando hash SHA-256 e timestamps criptográficos.
+*   **Verum Node OS:** Sistema operacional de altíssimo desempenho (otimização extrema de IOPS).
+*   **Kernel 8:** Arquitetura de kernel customizada com foco em *zero-dependency* e soberania de hardware.
 
-### 🛠️ Tech Stack & Tools
-* **Languages & Environments:** C, Bash, Linux / Debian architectures
-* **Kernel & Infrastructure:** Custom Linux Source Trees, `io_uring`, `live-build`, `xorriso`, Phoronix Test Suite
-* **Development:** Cursor IDE, Figma, Google Cloud (Compute Engine)
+## 🛠️ Stack & Expertise
+*   **Sistemas & Low-Level:** Arquitetura de Kernel Linux, Otimização de I/O, C/C++
+*   **Backend & Criptografia:** Python, Flask, PostgreSQL, PGP/GPG, SHA-256, SQLite
+*   **Ferramentas de Engenharia:** Cursor IDE, Git (Strict Vigilant Mode)
+
+## 🔗 Pesquisa & Publicações
+*   **ORCID:** <a href="https://orcid.org/0009-0006-1172-7362">0009-0006-1172-7362</a>
+*   Meus projetos, datasets e versões customizadas de OS (incluindo o Verum Wrecked Machines 8.0 e o Verum Node OS: Technical Preview) estão distribuídos em plataformas científicas e open-source como **Zenodo, Hugging Face, Kaggle e SourceForge**.
+
+---
+*🔒 **Security Notice:** Vigilant Mode is active. All my commits are strictly signed with my GPG key. Unsigned commits attributed to this account are unverified and not mine.*
