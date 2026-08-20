@@ -8,6 +8,10 @@ PORT = int(os.environ.get("PORT", "8000"))
 
 class AppHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path != "/":
+            self.send_error(404, "Not Found")
+            return
+
         body = (
             "Verum Node local app is running.\n"
             "Open README.md for project details.\n"
