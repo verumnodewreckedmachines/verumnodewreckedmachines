@@ -1,5 +1,5 @@
 # 🏴‍☠️ Rafael A. Xavier Fernandes | Verum Node
-### Architecting Sovereign Systems & Cryptographic Civic Memory
+## Architecting Sovereign Systems & Cryptographic Civic Memory
 
 > *"Resistência é Memória."*
 
@@ -13,11 +13,11 @@ Sou desenvolvedor de software e arquiteto de sistemas focado em **otimização e
 ## 🛠️ Stack & Expertise
 *   **Sistemas & Low-Level:** Arquitetura de Kernel Linux, Otimização de I/O, C/C++
 *   **Backend & Criptografia:** Python, Flask, PostgreSQL, PGP/GPG, SHA-256, SQLite
-*   **Ferramentas de Engenharia:** Cursor IDE, Git (Strict Vigilant Mode)
+*   **Ferramentas de Engenharia:** Cursor IDE, GitHub Vigilant Mode
 
 ## 🔗 Pesquisa & Publicações
 *   **ORCID:** <a href="https://orcid.org/0009-0006-1172-7362">0009-0006-1172-7362</a>
 *   Meus projetos, datasets e versões customizadas de OS (incluindo o Verum Wrecked Machines 8.0 e o Verum Node OS: Technical Preview) estão distribuídos em plataformas científicas e open-source como **Zenodo, Hugging Face, Kaggle e SourceForge**.
 
 ---
-*🔒 **Security Notice:** Vigilant Mode is active. All my commits are strictly signed with my GPG key. Unsigned commits attributed to this account are unverified and not mine.*
+*🔒 **Security Notice:** GitHub Vigilant Mode is active. Commits shown by GitHub as verified reflect the signatures I publish; any commit attributed to this account without verification should be treated with caution.*
