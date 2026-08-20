@@ -19,10 +19,6 @@ class AppHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def log_message(self, format, *args):
-        return
-
-
 def main():
     server = HTTPServer((HOST, PORT), AppHandler)
     print(f"Starting Verum Node local app on http://{HOST}:{PORT}")
