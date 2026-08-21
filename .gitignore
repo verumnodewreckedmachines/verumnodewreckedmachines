@@ -17,3 +17,8 @@ release-clean/
 *.bin  
 *.tar.gz  
 *.pdf 
+*.md
+commit_*.txt
+CHAVE_*
+VERUM_*
+QUADRUPLE_*
