@@ -1,4 +1,5 @@
 import { CircuitBreaker } from "./circuit-breaker";
+import { getRuntimeProviderConfig } from "./runtime-config";
 
 const PROVIDER_TIMEOUT_MS = 30_000;
 
@@ -8,7 +9,6 @@ export class MistralProvider {
 
   constructor() {
     // Check runtime config as fallback
-    const { getRuntimeProviderConfig } = require('./runtime-config');
     const runtimeConfig = getRuntimeProviderConfig();
     if (runtimeConfig.mistralApiKey) {
       this.apiKey = runtimeConfig.mistralApiKey;

@@ -2,16 +2,16 @@ import pg from "pg";
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
-// Validacao do DATABASE_URL para producao
-if (!process.env.DATABASE_URL) {
+// Only create pool if DATABASE_URL is provided
+const databaseUrl = process.env.DATABASE_URL;
+const isDesktopMode = !databaseUrl || process.env.VERUM_NATIVE_APP === "true";
+
+// Validacao do DATABASE_URL para producao (somente se nao for desktop mode)
+if (!isDesktopMode && !databaseUrl) {
   throw new Error(
     "DATABASE_URL must be set. Did you forget to provision a database?",
   );
 }
-
-// Only create pool if DATABASE_URL is provided
-const databaseUrl = process.env.DATABASE_URL;
-const isDesktopMode = !databaseUrl || process.env.VERUM_NATIVE_APP === "true";
 
 // In desktop mode, create a mock pool that doesn't fail
 const mockPool: any = {
