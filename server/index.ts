@@ -154,31 +154,7 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-Windows PowerShell
-Copyright (C) Microsoft Corporation. All rights reserved.
-
-PS C:\Users\Administrador> -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | % {[char]$_})
-i2e8zmD36tQlZI0JHgAFjb9KhkYXBof7
-PS C:\Users\Administrador> git add server/vite.ts
-fatal: not a git repository (or any of the parent directories): .git
-PS C:\Users\Administrador> git commit -m "Fix static files path for Render"
-fatal: not a git repository (or any of the parent directories): .git
-PS C:\Users\Administrador> git push --force origin master:main
-fatal: not a git repository (or any of the parent directories): .git
-PS C:\Users\Administrador> cd C:\Users\Administrador\Downloads\verumnodeindependente\DecentralizedWorkstation; git add server/vite.ts; git commit -m "Fix static files path for Render"; git push --force origin master:main
-On branch master
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        CHAVE_CLAUDE_CONFIGURADA.md
-        QUADRUPLE_AI_ACHIEVED.md
-        VERUM_AI_STATUS.md
-        commit_auth.txt
-        commit_msg_final.txt
-        commit_secrets.txt
-
-nothing added to commit but untracked files present (use "git add" to track)
-Everything up-to-date
-PS C:\Users\Administrador\Downloads\verumnodeindependente\DecentralizedWorkstation>
+  server.listen({
     port,
     host: "0.0.0.0",
     ...(process.platform !== "win32" ? { reusePort: true } : {}),
