@@ -6,6 +6,15 @@ export class MistralProvider {
   private apiKey = process.env.MISTRAL_API_KEY || "";
   private readonly circuit = new CircuitBreaker("mistral");
 
+  constructor() {
+    // Check runtime config as fallback
+    const { getRuntimeProviderConfig } = require('./runtime-config');
+    const runtimeConfig = getRuntimeProviderConfig();
+    if (runtimeConfig.mistralApiKey) {
+      this.apiKey = runtimeConfig.mistralApiKey;
+    }
+  }
+
   configure(apiKey: string): void {
     this.apiKey = apiKey;
   }

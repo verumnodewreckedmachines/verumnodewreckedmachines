@@ -41,6 +41,15 @@ class LlamaProvider {
   
   constructor() {
     this.apiKey = process.env.HUGGINGFACE_API_KEY || '';
+    // Also check runtime config as fallback
+    const runtimeConfig = getRuntimeProviderConfig();
+    if (runtimeConfig.mistralApiKey) {
+      this.apiKey = runtimeConfig.mistralApiKey;
+    }
+  }
+  
+  configure(apiKey: string): void {
+    this.apiKey = apiKey;
   }
   
   async generate(prompt: string): Promise<string> {
@@ -102,6 +111,11 @@ class GeminiProvider {
   
   constructor() {
     this.apiKey = process.env.GOOGLE_API_KEY || "";
+    // Check runtime config as fallback
+    const runtimeConfig = getRuntimeProviderConfig();
+    if (runtimeConfig.googleApiKey) {
+      this.apiKey = runtimeConfig.googleApiKey;
+    }
   }
 
   configure(apiKey: string): void {
@@ -137,6 +151,11 @@ class DeepSeekProvider {
 
   constructor() {
     this.apiKey = process.env.DEEPSEEK_API_KEY || "";
+    // Check runtime config as fallback
+    const runtimeConfig = getRuntimeProviderConfig();
+    if (runtimeConfig.deepseekApiKey) {
+      this.apiKey = runtimeConfig.deepseekApiKey;
+    }
   }
 
   configure(apiKey: string): void {

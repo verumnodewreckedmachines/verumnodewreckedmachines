@@ -10,6 +10,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { pool } from "./db";
 import { recordRequest, requestFinished, requestStarted } from "./metrics";
 import { attachAlertsWebSocket } from "./alerts-ws";
+import { configureAIProviders } from "./ai";
 import MemoryStore from "memorystore";
 
 const app = express();
@@ -129,6 +130,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Configure AI providers with environment variables
+  configureAIProviders();
+  
   const server = await registerRoutes(app);
   attachAlertsWebSocket(server, sessionStore, sessionSecret);
 
