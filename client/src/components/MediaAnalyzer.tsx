@@ -105,6 +105,7 @@ export function MediaAnalyzer() {
     try {
       const response = await fetch('/api/media/text-to-speech', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

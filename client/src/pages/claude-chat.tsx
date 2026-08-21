@@ -20,6 +20,7 @@ export default function ClaudeChat() {
     mutationFn: async (message: string) => {
       const response = await fetch('/api/claude/chat', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });

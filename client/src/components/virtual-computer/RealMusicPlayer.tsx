@@ -96,7 +96,7 @@ export default function RealMusicPlayer() {
   const loadMusicLibrary = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/music/library');
+      const response = await fetch('/api/music/library', { credentials: 'include' });
       const data: MusicLibrary = await response.json();
       
       if (data.status === 'success') {

@@ -60,6 +60,7 @@ export default function AIConsole() {
     if (Object.values(providerKeys).some(Boolean)) {
       fetch('/api/verum-ai/config', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(providerKeys),
       }).catch(() => undefined);
@@ -105,6 +106,7 @@ export default function AIConsole() {
     try {
       const response = await fetch('/api/verum-ai/config', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(providerKeys),
       });
@@ -134,6 +136,7 @@ export default function AIConsole() {
     try {
       const response = await fetch('/api/verum-ai/chat', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, provider: activeAI, context: context || undefined, grounded }),
       });
@@ -158,7 +161,7 @@ export default function AIConsole() {
     try {
       const formData = new FormData();
       formData.append('pdf', file);
-      const response = await fetch('/api/media/extract-pdf', { method: 'POST', body: formData });
+      const response = await fetch('/api/media/extract-pdf', { method: 'POST', credentials: 'include', body: formData });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha ao ler PDF');
       const pdfData = data as PdfResponse;
@@ -188,6 +191,7 @@ export default function AIConsole() {
     try {
       const response = await fetch('/api/media/text-to-speech/audio', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.slice(0, 1000), language: 'pt-BR' }),
       });
