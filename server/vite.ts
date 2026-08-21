@@ -68,43 +68,24 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  // In production (packaged), static files are in the same directory as the server
-  // because extraResources copies dist/ to app/dist/
-  // So if server is at resources/app/dist/index.js, public/ is at resources/app/dist/public/
-  // In development, files are at ../../dist/public relative to server/ directory
-  
-  // First try: same directory as this file (for production with extraResources)
-  let distPath = path.resolve(import.meta.dirname, "public");
-  
-  // Fallback for development: ../../dist/public
+  // FORCAR path para Render
+  let distPath = path.resolve(process.cwd(), "dist/public");
+
+  // Verificar se existe
   if (!fs.existsSync(distPath)) {
-    distPath = path.resolve(import.meta.dirname, "../../dist/public");
-  }
-  
-  // Additional fallback: check for dist/public in the project root
-  if (!fs.existsSync(distPath)) {
-    distPath = path.resolve(import.meta.dirname, "../../../dist/public");
-  }
-  
-  // Fallback to process.cwd()/dist/public (works when running with tsx from project root)
-  if (!fs.existsSync(distPath)) {
-    distPath = path.resolve(process.cwd(), "dist/public");
-  }
-  
-  // Final fallback: process.resourcesPath/app/dist/public
-  if (!fs.existsSync(distPath) && process.resourcesPath) {
-    distPath = path.resolve(process.resourcesPath, "app", "dist", "public");
+    // Fallback para path absoluto no Render
+    distPath = path.resolve("/opt/render/project/src/dist/public");
   }
 
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}. Tried: ${path.resolve(import.meta.dirname, "public")}, ${path.resolve(import.meta.dirname, "../../dist/public")}, ${path.resolve(import.meta.dirname, "../../../dist/public")}, ${path.resolve(process.cwd(), "dist/public")}, ${process.resourcesPath ? path.resolve(process.resourcesPath, "app/dist/public") : 'N/A'}. Make sure to build the client first.`,
-    );
+    throw new Error(`Static files not found at: ${distPath}`);
   }
+
+  console.log(`[serveStatic] Serving files from: ${distPath}`);
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
+  // SPA fallback - sempre serve index.html para rotas do frontend
   app.use("*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
