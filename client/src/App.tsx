@@ -32,8 +32,7 @@ import Config from "@/pages/config";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={VerumDashboard} />
-      <Route path="/dashboard-old" component={Dashboard} />
+      <Route path="/" component={VerumAIChat} />
       <Route path="/ai-console" component={VerumAIChat} />
       <Route path="/ai-operations" component={AIConsole} />
       <Route path="/claude-chat" component={ClaudeChat} />
