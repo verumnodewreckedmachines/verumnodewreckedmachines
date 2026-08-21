@@ -1,30 +1,25 @@
 import { Switch, Route } from "wouter";
-import { useEffect, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ParticleBackground } from "@/components/ui/particle-background";
-import { Sidebar } from "@/components/layout/sidebar";
-import { TopBar } from "@/components/layout/topbar";
 import NotFound from "@/pages/not-found";
-import Dashboard from "@/pages/dashboard-new";
 import VerumDashboard from "@/pages/verum-dashboard";
+import AIConsole from "@/pages/ai-console";
+import VerumAIChat from "@/pages/openai-chat";
+import ClaudeChat from "@/pages/claude-chat";
+import PublicDemo from "@/pages/public-demo";
 import Terminal from "@/pages/terminal";
-import NodeStore from "@/pages/node-store";
 import OfficeSuite from "@/pages/office-suite";
 import DevTools from "@/pages/dev-tools";
 import Security from "@/pages/security";
 import SystemMonitor from "@/pages/system-monitor";
 import SystemHealth from "@/pages/system-health";
-import AIConsole from "@/pages/ai-console";
-import VerumAIChat from "@/pages/openai-chat";
+import NodeStore from "@/pages/node-store";
 import MediaAnalyzer from "@/components/MediaAnalyzer";
-import ClaudeChat from "@/pages/claude-chat";
 import AppleIntegration from "@/pages/apple-integration";
 import IntelPack from "@/pages/intel-pack";
 import FigmaAssets from "@/pages/figma-assets";
-import PublicDemo from "@/pages/public-demo";
 import TransformShowcase from "@/pages/transform-showcase";
 import TransformDemo from "@/pages/transform-demo";
 import VirtualComputer from "@/pages/virtual-computer";
@@ -32,7 +27,6 @@ import FigmaShowcase from "@/pages/figma-showcase";
 import MacIntegration from "@/pages/mac-integration";
 import CopyrightInfo from "@/pages/copyright-info";
 import Alerts from "@/pages/alerts";
-import Login from "@/pages/login";
 import Config from "@/pages/config";
 
 function Router() {
@@ -72,38 +66,12 @@ function Router() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const isPublicDemo = window.location.pathname === "/public-demo";
-  const isLocalChatPreview = import.meta.env.DEV &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-
-  useEffect(() => {
-    if (isPublicDemo || isLocalChatPreview) {
-      setIsAuthenticated(true);
-      return;
-    }
-
-    fetch("/api/auth/me", { credentials: "include" })
-      .then(response => setIsAuthenticated(response.ok))
-      .catch(() => setIsAuthenticated(false));
-  }, [isLocalChatPreview, isPublicDemo]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {isPublicDemo || isLocalChatPreview ? (
-          <div className="min-h-screen bg-[#0f0f0f] text-white">
-            <Router />
-          </div>
-        ) : isAuthenticated === null ? (
-          <div className="min-h-screen bg-[#0f0f0f] text-white" />
-        ) : isAuthenticated ? (
-          <div className="min-h-screen bg-[#0f0f0f] text-white">
-            <Router />
-          </div>
-        ) : (
-          <Login onAuthenticated={() => setIsAuthenticated(true)} />
-        )}
+        <div className="min-h-screen bg-[#0f0f0f] text-white">
+          <Router />
+        </div>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
