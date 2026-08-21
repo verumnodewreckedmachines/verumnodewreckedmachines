@@ -389,49 +389,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid chat request", details: result.error.issues });
       }
 
-      const { message, provider, context, grounded } = result.data;
+      const { message, provider: requestedProvider, context, grounded } = result.data;
       configureAIProviders();
       const runtimeConfig = getRuntimeProviderConfig();
       const prompt = context ? `${message}\n\nContexto de documento fornecido pelo usuário:\n${context}\n\nRegra de integridade: não invente ou recalcule hashes, CIDs, assinaturas, datas, identidades ou validade jurídica. Use somente valores explicitamente fornecidos no contexto.` : message;
       let response: string;
+      let actualProvider: string = requestedProvider;
 
-      if (provider === "deepseek") {
-        if (grounded) {
-          const search = await duckSearchProvider.search(message.slice(0, 300));
-          const sources = [
-            search.abstract ? `Resumo: ${search.abstract}\nFonte: ${search.abstractUrl}` : "",
-            ...search.results.map(item => `- ${item.title}: ${item.snippet}\n  Fonte: ${item.url}`),
-          ].filter(Boolean).join("\n").slice(0, 6_000);
-          response = await deepSeekProvider.generate(`${prompt}\n\nUse este contexto DuckDuckGo e cite as fontes quando relevante:\n${sources || "Nenhuma fonte encontrada."}`);
-        } else {
-          response = await deepSeekProvider.generate(prompt);
+      // Try providers in order until one works
+      const providersToTry = [
+        { name: "deepseek", provider: deepSeekProvider, needsApiKey: !!runtimeConfig.deepseekApiKey || !!process.env.DEEPSEEK_API_KEY },
+        { name: "mistral", provider: mistralProvider, needsApiKey: !!runtimeConfig.mistralApiKey || !!process.env.MISTRAL_API_KEY },
+        { name: "gemini", provider: geminiProvider, needsApiKey: !!runtimeConfig.googleApiKey || !!process.env.GOOGLE_API_KEY },
+        { name: "claude", provider: null, needsApiKey: !!runtimeConfig.anthropicApiKey || !!process.env.ANTHROPIC_API_KEY }
+      ];
+
+      // If user requested a specific provider, try it first
+      const providerOrder = requestedProvider === "deepseek" ? ["deepseek", "mistral", "gemini", "claude"] :
+                           requestedProvider === "mistral" ? ["mistral", "deepseek", "gemini", "claude"] :
+                           requestedProvider === "gemini" ? ["gemini", "deepseek", "mistral", "claude"] :
+                           ["deepseek", "mistral", "gemini", "claude"];
+
+      for (const providerName of providerOrder) {
+        try {
+          if (providerName === "deepseek") {
+            if (!deepSeekProvider || !(runtimeConfig.deepseekApiKey || process.env.DEEPSEEK_API_KEY)) continue;
+            if (grounded) {
+              const search = await duckSearchProvider.search(message.slice(0, 300));
+              const sources = [
+                search.abstract ? `Resumo: ${search.abstract}\nFonte: ${search.abstractUrl}` : "",
+                ...search.results.map(item => `- ${item.title}: ${item.snippet}\n  Fonte: ${item.url}`),
+              ].filter(Boolean).join("\n").slice(0, 6_000);
+              response = await deepSeekProvider.generate(`${prompt}\n\nUse este contexto DuckDuckGo e cite as fontes quando relevante:\n${sources || "Nenhuma fonte encontrada."}`);
+            } else {
+              response = await deepSeekProvider.generate(prompt);
+            }
+            actualProvider = "deepseek";
+            break;
+          } else if (providerName === "mistral") {
+            if (!(runtimeConfig.mistralApiKey || process.env.MISTRAL_API_KEY)) continue;
+            response = await mistralProvider.generate(prompt);
+            actualProvider = "mistral";
+            break;
+          } else if (providerName === "gemini") {
+            if (!(runtimeConfig.googleApiKey || process.env.GOOGLE_API_KEY)) continue;
+            response = await geminiProvider.generate(prompt);
+            actualProvider = "gemini";
+            break;
+          } else if (providerName === "claude") {
+            const anthropicApiKey = runtimeConfig.anthropicApiKey || process.env.ANTHROPIC_API_KEY;
+            if (!anthropicApiKey) continue;
+            const configuredAnthropic = anthropicApiKey === process.env.ANTHROPIC_API_KEY
+              ? anthropic
+              : new Anthropic({ apiKey: anthropicApiKey });
+            const completion = await configuredAnthropic.messages.create({
+              model: "claude-sonnet-4-20250514",
+              system: "Responda em português de forma técnica e objetiva como o VERUM AI.",
+              max_tokens: 1_000,
+              messages: [{ role: "user", content: prompt }],
+            }, { signal: AbortSignal.timeout(30_000) });
+            response = completion.content.find(block => block.type === "text")?.text || "";
+            actualProvider = "claude";
+            break;
+          }
+        } catch (error) {
+          console.log(`Provider ${providerName} failed:`, error instanceof Error ? error.message : error);
+          continue;
         }
-      } else if (provider === "mistral") {
-        response = await mistralProvider.generate(prompt);
-      } else if (provider === "gemini") {
-        response = await geminiProvider.generate(prompt);
-      } else {
-        const anthropicApiKey = runtimeConfig.anthropicApiKey || process.env.ANTHROPIC_API_KEY;
-        if (!anthropicApiKey) {
-          return res.status(503).json({ error: "ANTHROPIC_API_KEY not configured" });
-        }
-        const configuredAnthropic = anthropicApiKey === process.env.ANTHROPIC_API_KEY
-          ? anthropic
-          : new Anthropic({ apiKey: anthropicApiKey });
-        const completion = await configuredAnthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
-          system: "Responda em português de forma técnica e objetiva como o VERUM AI.",
-          max_tokens: 1_000,
-          messages: [{ role: "user", content: prompt }],
-        }, { signal: AbortSignal.timeout(30_000) });
-        response = completion.content.find(block => block.type === "text")?.text || "";
+      }
+
+      if (!response) {
+        return res.status(503).json({ 
+          error: "Nenhum provedor de IA está configurado",
+          details: "Configure pelo menos uma das seguintes variáveis de ambiente: DEEPSEEK_API_KEY, MISTRAL_API_KEY, GOOGLE_API_KEY ou ANTHROPIC_API_KEY"
+        });
       }
 
       if (response.startsWith('{"provider":') && response.includes('"code":')) {
         return res.status(502).json({ error: "VERUM AI provider unavailable", details: response });
       }
 
-      res.json({ response, provider, grounded });
+      res.json({ response, provider: actualProvider, grounded });
     } catch (error) {
       console.error("VERUM AI orchestration error:", error);
       res.status(502).json({ error: "VERUM AI provider unavailable", details: error instanceof Error ? error.message : "Unknown provider error" });
