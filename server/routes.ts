@@ -74,13 +74,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return address === "127.0.0.1" || address === "::1" || address === "::ffff:127.0.0.1";
   };
 
-  app.get("/api/verum-ai/config", (req, res) => {
-    if (!isLocalDevelopmentRequest(req)) return res.status(404).end();
+  app.get("/api/verum-ai/config", (_req, res) => {
     res.json({ configured: getConfiguredProviderStatus() });
   });
 
   app.post("/api/verum-ai/config", (req, res) => {
-    if (!isLocalDevelopmentRequest(req)) return res.status(404).end();
     const result = z.object({
       anthropicApiKey: z.string().max(500).optional(),
       deepseekApiKey: z.string().max(500).optional(),
