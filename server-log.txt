@@ -1,0 +1,2 @@
+◇ injected env (4) from .env // tip: ⌘ override existing { override: true }
+3:18:24 AM [express] serving on port 5000

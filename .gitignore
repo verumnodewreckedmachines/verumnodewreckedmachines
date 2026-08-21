@@ -1,0 +1,19 @@
+node_modules/  
+dist/  
+uploads/tts-cache/  
+.env  
+.env.*  
+  
+# Large files and directories - GitHub size limits (\ 
+attached_assets/  
+backup_reference_files/  
+release/  
+release-clean/  
+*.asar  
+*.exe  
+*.blockmap  
+*.dll  
+*.pak  
+*.bin  
+*.tar.gz  
+*.pdf 

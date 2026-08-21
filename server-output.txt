@@ -1,0 +1,2 @@
+◇ injected env (4) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+3:15:27 AM [express] serving on port 5000

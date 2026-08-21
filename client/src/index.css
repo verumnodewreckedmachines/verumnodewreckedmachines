@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0f0f0f;
+  --foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #8a8a8a;
+  --popover: #1a1a1a;
+  --popover-foreground: #ffffff;
+  --card: #1a1a1a;
+  --card-foreground: #ffffff;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --primary: #00d4aa;
+  --primary-foreground: #000000;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #ffffff;
+  --accent: #2a2a2a;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #00d4aa;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(193, 100%, 50%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-verum-dark text-foreground;
+    background-color: hsl(var(--verum-dark));
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+/* Scrollbar personalizada elegante */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4a5568 #2d3748;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #2d3748;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Estabilização de janelas virtuais */
+.virtual-window {
+  transition: all 0.3s ease-in-out;
+  transform-origin: center;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.virtual-window:hover {
+  transform: translateZ(0);
+}
+
+/* VERUM OS Custom Animations */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px hsla(193, 100%, 50%, 0.3); }
+  100% { box-shadow: 0 0 20px hsla(193, 100%, 50%, 0.8), 0 0 30px hsla(193, 100%, 50%, 0.4); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes particle-float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* Glass Effect */
+.glass-effect {
+  background: hsla(0, 0%, 100%, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+}
+
+.glass-effect:hover {
+  background: hsla(0, 0%, 100%, 0.08);
+}
+
+/* Holographic Border */
+.holographic-border {
+  background: linear-gradient(45deg, 
+    hsl(var(--verum-cyan)), 
+    hsl(var(--verum-purple)), 
+    hsl(var(--verum-green)), 
+    hsl(var(--verum-orange))
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Terminal Glow */
+.terminal-glow {
+  background: hsla(0, 0%, 0%, 0.8);
+  box-shadow: 0 0 30px hsla(193, 100%, 50%, 0.3), inset 0 0 30px hsla(193, 100%, 50%, 0.1);
+}
+
+/* Particle System */
+.particle {
+  position: absolute;
+  background: radial-gradient(circle, hsla(193, 100%, 50%, 0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particle-float 8s infinite linear;
+}
+
+/* Custom Animation Classes */
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+/* VERUM Brand Colors */
+.text-verum-cyan { color: hsl(var(--verum-cyan)); }
+.text-verum-purple { color: hsl(var(--verum-purple)); }
+.text-verum-green { color: hsl(var(--verum-green)); }
+.text-verum-orange { color: hsl(var(--verum-orange)); }
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(75, 85, 99);
+  border-radius: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background-color: rgb(31, 41, 55);
+}
+
+.bg-verum-cyan { background-color: hsl(var(--verum-cyan)); }
+.bg-verum-purple { background-color: hsl(var(--verum-purple)); }
+.bg-verum-green { background-color: hsl(var(--verum-green)); }
+.bg-verum-orange { background-color: hsl(var(--verum-orange)); }
+
+.bg-verum-dark { background-color: hsl(var(--verum-dark)); }
+.bg-verum-panel { background-color: hsl(var(--verum-panel)); }
+.bg-verum-glass { background-color: hsl(var(--verum-glass)); }
+
+.border-verum-border { border-color: hsl(var(--verum-border)); }
+.border-verum-cyan { border-color: hsl(var(--verum-cyan)); }
+
+/* Typography */
+.font-inter { font-family: 'Inter', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .glass-effect {
+    backdrop-filter: blur(5px);
+  }
+}
