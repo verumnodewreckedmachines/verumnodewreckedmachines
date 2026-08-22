@@ -400,18 +400,32 @@ export class VerumAI {
 // Advanced Media Processing with Google Gemini
 class MediaProcessor {
   private gemini: GoogleGenerativeAI;
+  private readonly hasGoogleKey: boolean;
   
   constructor() {
-    this.gemini = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+    const apiKey = process.env.GOOGLE_API_KEY?.trim() || '';
+    this.hasGoogleKey = apiKey !== '';
+    this.gemini = new GoogleGenerativeAI(apiKey);
   }
 
   async extractPDFText(buffer: Buffer): Promise<{ text: string; pages: number }> {
-    // Check if Google API key is available for Gemini extraction
-    const hasGoogleKey = process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY.trim() !== '';
+    // Try using pdf-parse first (now bundled in production)
+    try {
+      if (!pdfParse) {
+        pdfParse = (await import('pdf-parse')).default;
+      }
+      const data = await pdfParse(buffer);
+      return {
+        text: data.text.slice(0, 100_000),
+        pages: data.numpages || 0,
+      };
+    } catch (parseError) {
+      console.warn("pdf-parse failed, trying Gemini:", parseError);
+    }
     
-    if (hasGoogleKey) {
+    // Fallback to Gemini if pdf-parse fails
+    if (this.hasGoogleKey) {
       try {
-        // Try using Gemini to extract text from PDF directly
         const model = this.gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = "Extraia TODO o texto deste PDF de forma fiel, sem resumir, analisar ou modificar. Retorne APENAS o texto bruto sem formatação adicional, comentários ou marcações.";
         
@@ -425,37 +439,31 @@ class MediaProcessor {
         const result = await model.generateContent([prompt, pdfPart]);
         const text = result.response.text();
         
-        // Estimate pages based on text length (average 500 words per page)
-        const estimatedPages = Math.max(1, Math.ceil(text.split(/\s+/).length / 500));
+        const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
+        const estimatedPages = Math.max(1, Math.ceil(wordCount / 500));
         
         return {
           text: text.slice(0, 100_000),
           pages: estimatedPages,
         };
       } catch (geminiError) {
-        console.warn("Gemini PDF extraction failed, falling back to pdf-parse:", geminiError);
+        const message = geminiError instanceof Error ? geminiError.message : 'Unknown error';
+        console.error("Gemini PDF extraction also failed:", geminiError);
+        throw new Error(`PDF extraction failed: pdf-parse error (${parseError instanceof Error ? parseError.message : 'unknown'}) and Gemini error (${message})`);
       }
     }
     
-    // Fallback to pdf-parse
-    try {
-      if (!pdfParse) {
-        pdfParse = (await import('pdf-parse')).default;
-      }
-      const data = await pdfParse(buffer);
-      return {
-        text: data.text.slice(0, 100_000),
-        pages: data.numpages || 0,
-      };
-    } catch (parseError) {
-      console.error("PDF Parse failed:", parseError);
-      throw new Error(`PDF extraction unavailable: ${parseError instanceof Error ? parseError.message : 'pdf-parse module not available in production'}. Please configure GOOGLE_API_KEY for Gemini-based PDF extraction.`);
-    }
+    throw new Error("PDF extraction unavailable. Both pdf-parse and Gemini (missing GOOGLE_API_KEY) failed.");
   }
 
   async processPDF(buffer: Buffer): Promise<string> {
     try {
-      const { text } = await this.extractPDFText(buffer);
+      const { text, pages } = await this.extractPDFText(buffer);
+      
+      // If no Google API key, return extracted text with basic info
+      if (!this.hasGoogleKey) {
+        return `Texto extraído do PDF (${pages} página(s)):\n\n${text}\n\n[NOTA: Configure GOOGLE_API_KEY para obter análise completa do VERUM AI]`;
+      }
       
       // Use Gemini to analyze and summarize PDF content
       const model = this.gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -480,6 +488,9 @@ Forneça análise completa em português:
 
   async analyzeImage(imageBuffer: Buffer, mimeType: string = "image/jpeg"): Promise<string> {
     try {
+      if (!this.hasGoogleKey) {
+        throw new Error("GOOGLE_API_KEY not configured for image analysis");
+      }
       const model = this.gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
       
       const prompt = `VERUM AI - Análise de Imagem:
