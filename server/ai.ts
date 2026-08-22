@@ -7,8 +7,10 @@ import { CircuitBreaker } from './circuit-breaker';
 import { mistralProvider } from './mistral';
 import { getRuntimeProviderConfig } from './runtime-config';
 
-// PDF Parse dynamic import to avoid initialization issues
-let pdfParse: any;
+// PDF Parse - use require for CommonJS module
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+let pdfParse: any = null;
 
 /*
 <important_code_snippet_instructions>
@@ -409,10 +411,10 @@ class MediaProcessor {
   }
 
   async extractPDFText(buffer: Buffer): Promise<{ text: string; pages: number }> {
-    // Try using pdf-parse first (now bundled in production)
+    // Try using pdf-parse first
     try {
       if (!pdfParse) {
-        pdfParse = (await import('pdf-parse')).default;
+        pdfParse = require('pdf-parse');
       }
       const data = await pdfParse(buffer);
       return {
