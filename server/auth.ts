@@ -42,7 +42,27 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     "/api/public-verification",
     "/",
     "/ai-console",
+    "/ai-operations",
+    "/verum-ai",
+    "/pqf",
+    "/dashboard",
+    "/dashboard-old",
+    "/openai-chat",
+    "/claude-chat",
     "/assets/*",
+  ]);
+  const apiPublicPaths = new Set([
+    "/api/verum-ai/chat",
+    "/api/verum-ai/config",
+    "/api/deepseek/chat",
+    "/api/deepseek/grounded",
+    "/api/mistral/chat",
+    "/api/gemini/chat",
+    "/api/claude/chat",
+    "/api/media/extract-pdf",
+    "/api/media/text-to-speech",
+    "/api/media/text-to-speech/audio",
+    "/api/search/duck",
   ]);
   const requestPath = req.originalUrl.split("?", 1)[0];
   const localChatEnabled = (process.env.NODE_ENV === "development" || process.env.VERUM_NATIVE_APP === "true") &&
@@ -52,7 +72,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   const localFeaturePath = localChatEnabled && isLocalRequest &&
     /^\/api\/(verum-ai\/(chat|config)|deepseek\/(chat|grounded)|mistral\/chat|claude\/chat|gemini\/chat|media\/(extract-pdf|text-to-speech\/audio))$/.test(requestPath);
 
-  if (publicPaths.has(requestPath) || publicPaths.has(`/api${req.path}`) || localFeaturePath) {
+  if (publicPaths.has(requestPath) || apiPublicPaths.has(requestPath) || publicPaths.has(`/api${req.path}`) || localFeaturePath) {
     next();
     return;
   }
