@@ -406,15 +406,51 @@ class MediaProcessor {
   }
 
   async extractPDFText(buffer: Buffer): Promise<{ text: string; pages: number }> {
-    if (!pdfParse) {
-      pdfParse = (await import('pdf-parse')).default;
+    // Check if Google API key is available for Gemini extraction
+    const hasGoogleKey = process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY.trim() !== '';
+    
+    if (hasGoogleKey) {
+      try {
+        // Try using Gemini to extract text from PDF directly
+        const model = this.gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = "Extraia TODO o texto deste PDF de forma fiel, sem resumir, analisar ou modificar. Retorne APENAS o texto bruto sem formatação adicional, comentários ou marcações.";
+        
+        const pdfPart = {
+          inlineData: {
+            data: buffer.toString('base64'),
+            mimeType: 'application/pdf'
+          }
+        };
+        
+        const result = await model.generateContent([prompt, pdfPart]);
+        const text = result.response.text();
+        
+        // Estimate pages based on text length (average 500 words per page)
+        const estimatedPages = Math.max(1, Math.ceil(text.split(/\s+/).length / 500));
+        
+        return {
+          text: text.slice(0, 100_000),
+          pages: estimatedPages,
+        };
+      } catch (geminiError) {
+        console.warn("Gemini PDF extraction failed, falling back to pdf-parse:", geminiError);
+      }
     }
-
-    const data = await pdfParse(buffer);
-    return {
-      text: data.text.slice(0, 100_000),
-      pages: data.numpages || 0,
-    };
+    
+    // Fallback to pdf-parse
+    try {
+      if (!pdfParse) {
+        pdfParse = (await import('pdf-parse')).default;
+      }
+      const data = await pdfParse(buffer);
+      return {
+        text: data.text.slice(0, 100_000),
+        pages: data.numpages || 0,
+      };
+    } catch (parseError) {
+      console.error("PDF Parse failed:", parseError);
+      throw new Error(`PDF extraction unavailable: ${parseError instanceof Error ? parseError.message : 'pdf-parse module not available in production'}. Please configure GOOGLE_API_KEY for Gemini-based PDF extraction.`);
+    }
   }
 
   async processPDF(buffer: Buffer): Promise<string> {

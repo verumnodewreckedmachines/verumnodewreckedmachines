@@ -176,14 +176,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
+  app.get("/api/auth/me", requireAuth, (req, res) => {
     res.json({ userId: req.session.userId });
   });
-
-  app.use("/api", requireAuth);
 
   app.get("/api/omegamesh/nodes", async (_req, res) => {
     res.json({ nodes: await omegameshPilot.listNodes() });
@@ -292,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Documents endpoints
-  app.get("/api/documents", async (req, res) => {
+  app.get("/api/documents", requireAuth, async (req, res) => {
     try {
       const userId = req.session.userId;
       const type = req.query.type as string;
@@ -303,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/documents/:id", async (req, res) => {
+  app.get("/api/documents/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const document = await storage.getDocument(id);
@@ -316,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/documents", async (req, res) => {
+  app.post("/api/documents", requireAuth, async (req, res) => {
     try {
       const result = insertDocumentSchema.safeParse(req.body);
       if (!result.success) {
@@ -329,7 +324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/documents/:id", async (req, res) => {
+  app.put("/api/documents/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const currentUserId = req.session.userId;
@@ -353,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Terminal commands endpoints
-  app.get("/api/terminal-commands", async (req, res) => {
+  app.get("/api/terminal-commands", requireAuth, async (req, res) => {
     try {
       const commands = await storage.getTerminalCommands(req.session.userId);
       res.json(commands);
@@ -362,7 +357,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/terminal-commands", async (req, res) => {
+  app.post("/api/terminal-commands", requireAuth, async (req, res) => {
     try {
       const result = insertTerminalCommandSchema.safeParse(req.body);
       if (!result.success) {
@@ -718,7 +713,7 @@ ${message}
   });
 
   // Users endpoints
-  app.get("/api/users/:id", async (req, res) => {
+  app.get("/api/users/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (id !== req.session.userId) {
