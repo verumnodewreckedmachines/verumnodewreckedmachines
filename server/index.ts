@@ -57,29 +57,30 @@ const allowedOrigins = [
   /\.replit\.dev$/
 ].filter(Boolean);
 
-// Allow all origins in production to fix CORS issues
+// CORS configuration - Cannot use '*' with credentials
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
-  // In production, allow all origins with credentials
-  if (process.env.NODE_ENV === 'production') {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
-    return next();
-  }
-  
-  // Development CORS
-  if (!origin || allowedOrigins.some(allowed => {
+  // Allowed origins including Render production domain
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5000',
+    'https://verumnode.com',
+    'https://www.verumnode.com',
+    'https://verumnodewreckedmachines.onrender.com',
+    process.env.REPLIT_DEV_DOMAIN,
+    /\.repl\.co$/,
+    /\.replit\.dev$/,
+  ].filter(Boolean);
+
+  // Check if origin is allowed
+  const isAllowed = !origin || allowedOrigins.some(allowed => {
     if (typeof allowed === 'string') return origin === allowed;
     if (allowed instanceof RegExp) return allowed.test(origin);
     return false;
-  })) {
+  });
+
+  if (isAllowed) {
     res.header('Access-Control-Allow-Origin', origin || '*');
   }
   res.header('Access-Control-Allow-Credentials', 'true');
