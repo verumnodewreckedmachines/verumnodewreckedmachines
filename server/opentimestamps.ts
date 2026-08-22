@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const OTS_DIR = path.resolve("uploads", "opentimestamps");
-const OTS_CLI = path.resolve("node_modules", "javascript-opentimestamps", "ots-cli.js");
+const OTS_CLI = path.resolve("node_modules", ".bin", "ots");
 
 export interface OpenTimestampResult {
   status: "pending";
@@ -28,20 +28,45 @@ export async function stampSha256(hash: string): Promise<OpenTimestampResult> {
 
   try {
     await fs.access(proofPath);
+    // Se já existe, lê e retorna
+    const proof = await fs.readFile(proofPath);
+    return {
+      status: "pending",
+      algorithm: "sha256",
+      hash: hash.toLowerCase(),
+      proofFilename,
+      proofBase64: proof.toString("base64"),
+    };
   } catch {
-    await execFileAsync(process.execPath, [OTS_CLI, "stamp", "-d", hash], {
-      cwd: OTS_DIR,
-      timeout: 45_000,
-      windowsHide: true,
-    });
-  }
+    // Criar timestamp usando CLI
+    try {
+      await execFileAsync(OTS_CLI, ["stamp", "-d", hash], {
+        cwd: OTS_DIR,
+        timeout: 45_000,
+        windowsHide: true,
+      });
+    } catch (error) {
+      // Se o CLI falhar, tenta com node ots-cli.js
+      const OTS_CLIJS = path.resolve("node_modules", "javascript-opentimestamps", "ots-cli.js");
+      await execFileAsync(process.execPath, [OTS_CLIJS, "stamp", "-d", hash], {
+        cwd: OTS_DIR,
+        timeout: 45_000,
+        windowsHide: true,
+      });
+    }
 
-  const proof = await fs.readFile(proofPath);
-  return {
-    status: "pending",
-    algorithm: "sha256",
-    hash: hash.toLowerCase(),
-    proofFilename,
-    proofBase64: proof.toString("base64"),
-  };
+    // Ler o proof gerado
+    try {
+      const proof = await fs.readFile(proofPath);
+      return {
+        status: "pending",
+        algorithm: "sha256",
+        hash: hash.toLowerCase(),
+        proofFilename,
+        proofBase64: proof.toString("base64"),
+      };
+    } catch (readError) {
+      throw new Error(`Failed to read OpenTimestamps proof: ${readError}`);
+    }
+  }
 }
